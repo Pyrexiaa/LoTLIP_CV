@@ -9,11 +9,10 @@ import open_clip
 def parse_args(args=None):
     parser = argparse.ArgumentParser()
 
-
     parser.add_argument(
         "--cache-dir",
         type=str,
-        default="~/.cache/",
+        default="./cache",
         help="Where to store files cache_dir.",
     )
 
