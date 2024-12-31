@@ -20,6 +20,7 @@ def yolo(image_url):
     return output
 
 if __name__ == "__main__":
-    image_url = "https://ultralytics.com/images/bus.jpg"
+    # image_url = "https://ultralytics.com/images/bus.jpg"
+    image_url = "figures/cat.png"
     output = yolo(image_url)
     print(output)
