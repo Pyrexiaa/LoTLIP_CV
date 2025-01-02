@@ -17,6 +17,7 @@ from utils import (
     draw_bounding_box,
     calculate_metrics,
     group_bbox_by_filename, 
+    plot_similarity_histogram,
     match_predictions_to_ground_truth,
 )
 
@@ -88,6 +89,7 @@ def main(args=None):
     
     
     # main inferencing loop
+    sim_scores = []
     image_files = []
     selected_bboxes = {}
     for i in tqdm(range(num_samples)):
@@ -162,6 +164,9 @@ def main(args=None):
             similarities = torch.nn.functional.cosine_similarity(text_embedding, image_embeddings) # Shape: [N]
             similarities = similarities.tolist()
             
+            # save for visualisation
+            sim_scores += similarities
+            
             # select most relevant bbox
             relevant_bboxes = []
             for j, similarity in enumerate(similarities):
@@ -178,6 +183,10 @@ def main(args=None):
         # save selected bbox
         with open(Path(args.output_dir, 'selected_bbox.json'), 'w') as f:
             json.dump(selected_bboxes, f, indent=4)
+    
+    
+    # visualise distribution of semantic similarity scores
+    plot_similarity_histogram(sim_scores, str(Path(args.output_dir, "hist_similarities.png")), log_scale=True)
     
     
     # compute metrics

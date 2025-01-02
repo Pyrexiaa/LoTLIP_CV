@@ -1,3 +1,5 @@
+import numpy as np
+import matplotlib.pyplot as plt
 from PIL import Image, ImageDraw
 
 
@@ -193,3 +195,40 @@ def draw_bounding_box(
     )
     
     return image
+
+
+def plot_similarity_histogram(
+    similarities: list[float],
+    save_path: str,
+    sim_min: float = -1.0,
+    sim_max: float = 1.0,
+    bin_size: float = 0.1,
+    log_scale: bool = False
+) -> bool:
+    """Plots a Histogram of similarities and saves to save_path"""
+    
+    try:
+        bin_edges = np.arange(sim_min, sim_max + bin_size, bin_size)
+        hist, edges = np.histogram(similarities, bins=bin_edges)
+
+        plt.figure(figsize=(10, 6))
+
+        for i in range(len(hist)):
+            color = 'red' if edges[i + 1] <= 0 else 'green'
+            plt.bar(edges[i], hist[i], width=bin_size, color=color, edgecolor=color, align='edge', alpha=0.7)
+
+        plt.title(f"Histogram of Semantic Similarity Categorized into Bins of Size {bin_size}", fontsize=14)
+        plt.xlabel("Semantic Similarity", fontsize=12)
+        plt.ylabel("Frequency (Log Scale)" if log_scale else "Frequency", fontsize=12)
+        plt.grid(axis='y', linestyle='--', alpha=0.7)
+        plt.xticks(bin_edges, rotation=45)
+
+        if log_scale:
+            plt.yscale('log')
+
+        plt.tight_layout()
+        plt.savefig(save_path)
+        return True
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return False
